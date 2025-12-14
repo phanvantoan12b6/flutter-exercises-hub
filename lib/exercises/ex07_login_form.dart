@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-const Color mainColorLogin = Color(0xFF2F53D8);
-const Color errorColorLogin = Color(0xFFC62828);
-const Color borderColorLogin = Color(0xFFD9D9D9);
-
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
@@ -14,6 +10,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   bool _hidePass = true;
+  bool _rememberMe = false;
 
   final _email = TextEditingController();
   final _password = TextEditingController();
@@ -21,126 +18,250 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              color: mainColorLogin,
-              child: const Center(
-                child: Text(
-                  "Form Đăng nhập",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(24),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 450),
+                padding: EdgeInsets.all(40),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 30,
+                      offset: Offset(0, 15),
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.lock_person_rounded,
+                          size: 48,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      Text(
+                        'Chào mừng trở lại!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Đăng nhập để tiếp tục',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      SizedBox(height: 32),
+                      _buildTextField(
+                        controller: _email,
+                        label: "Email",
+                        icon: Icons.email_outlined,
+                        validator: (v) =>
+                            v!.isEmpty ? "Vui lòng nhập email" : null,
+                      ),
+                      SizedBox(height: 20),
+                      _buildTextField(
+                        controller: _password,
+                        label: "Mật khẩu",
+                        icon: Icons.lock_outline,
+                        isPassword: true,
+                        validator: (v) =>
+                            v!.isEmpty ? "Vui lòng nhập mật khẩu" : null,
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (val) =>
+                                      setState(() => _rememberMe = val!),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Ghi nhớ',
+                                style: TextStyle(
+                                    color: Colors.grey[700], fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              'Quên mật khẩu?',
+                              style: TextStyle(
+                                color: Color(0xFF4facfe),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 24),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFF4facfe).withOpacity(0.4),
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Đăng nhập thành công! 👋"),
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            padding: EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            "Đăng nhập",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Chưa có tài khoản? ',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              'Đăng ký ngay',
+                              style: TextStyle(
+                                color: Color(0xFF4facfe),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _email,
-                      decoration: _inputDecoration("Email", Icons.email),
-                      validator: (v) =>
-                          v!.isEmpty ? "Vui lòng nhập email" : null,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _password,
-                      obscureText: _hidePass,
-                      decoration: _inputDecoration(
-                        "Mật khẩu",
-                        Icons.lock,
-                        isPassword: true,
-                      ),
-                      validator: (v) =>
-                          v!.isEmpty ? "Vui lòng nhập mật khẩu" : null,
-                    ),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: mainColorLogin,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.login,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          "Đăng nhập",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Đăng nhập thành công!"),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  InputDecoration _inputDecoration(
-    String label,
-    IconData icon, {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
     bool isPassword = false,
+    String? Function(String?)? validator,
   }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: isPassword
-          ? IconButton(
-              icon: Icon(
-                _hidePass ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: () => setState(() => _hidePass = !_hidePass),
-            )
-          : null,
-      enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: borderColorLogin, width: 1.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: mainColorLogin, width: 1.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: errorColorLogin, width: 1.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: errorColorLogin, width: 1.5),
-        borderRadius: BorderRadius.circular(12),
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword && _hidePass,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Color(0xFF4facfe)),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _hidePass ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey[600],
+                ),
+                onPressed: () => setState(() => _hidePass = !_hidePass),
+              )
+            : null,
+        filled: true,
+        fillColor: Colors.grey[50],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Color(0xFF4facfe), width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.red[300]!, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.red, width: 2),
+        ),
       ),
     );
   }

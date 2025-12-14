@@ -8,12 +8,24 @@ class CountdownTimerPage extends StatefulWidget {
   _CountdownTimerPageState createState() => _CountdownTimerPageState();
 }
 
-class _CountdownTimerPageState extends State<CountdownTimerPage> {
+class _CountdownTimerPageState extends State<CountdownTimerPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   Timer? _timer;
   int _remainingSeconds = 0;
+  int _totalSeconds = 0;
   bool _isRunning = false;
   String _message = "";
+  late AnimationController _animController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+  }
 
   void _startTimer() {
     if (_isRunning) return;
@@ -28,9 +40,12 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
 
     setState(() {
       _remainingSeconds = input;
+      _totalSeconds = input;
       _isRunning = true;
       _message = "";
     });
+
+    _animController.repeat();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -40,6 +55,7 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
           _isRunning = false;
           _message = "⏰ Hết thời gian!";
           _timer?.cancel();
+          _animController.stop();
         }
       });
     });
@@ -49,9 +65,12 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
     setState(() {
       _timer?.cancel();
       _remainingSeconds = 0;
+      _totalSeconds = 0;
       _isRunning = false;
       _message = "";
       _controller.clear();
+      _animController.stop();
+      _animController.reset();
     });
   }
 
@@ -59,96 +78,172 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
   void dispose() {
     _timer?.cancel();
     _controller.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    double progress = _totalSeconds > 0 ? _remainingSeconds / _totalSeconds : 0;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Bộ đếm thời gian"),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Nhập số giây cần đếm",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 5),
-                  TextField(
-                    controller: _controller,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Nhập số giây ở đây",
-                    ),
-                    enabled: !_isRunning,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Text(
-                _remainingSeconds > 0 ? '$_remainingSeconds s' : '0',
-                style: TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  color:
-                      _remainingSeconds > 0 ? Colors.green : Colors.redAccent,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(24),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _isRunning ? null : _startTimer,
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text("Bắt đầu"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
+                  Text(
+                    'Countdown Timer',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(width: 15),
-                  ElevatedButton.icon(
-                    onPressed: _resetTimer,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text("Đặt lại"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
+                  SizedBox(height: 40),
+                  Container(
+                    padding: EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 12,
+                                backgroundColor: Colors.grey[200],
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  _remainingSeconds > 0
+                                      ? Color(0xFF667eea)
+                                      : Colors.red,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  _remainingSeconds > 0
+                                      ? '$_remainingSeconds'
+                                      : '0',
+                                  style: TextStyle(
+                                    fontSize: 56,
+                                    fontWeight: FontWeight.bold,
+                                    color: _remainingSeconds > 0
+                                        ? Color(0xFF667eea)
+                                        : Colors.red,
+                                  ),
+                                ),
+                                Text(
+                                  'giây',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 32),
+                        TextField(
+                          controller: _controller,
+                          keyboardType: TextInputType.number,
+                          enabled: !_isRunning,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            hintText: "Nhập số giây",
+                            prefixIcon: Icon(Icons.timer_outlined),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _isRunning ? null : _startTimer,
+                                icon: Icon(Icons.play_arrow),
+                                label: Text('Bắt đầu'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF667eea),
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _resetTimer,
+                                icon: Icon(Icons.refresh),
+                                label: Text('Đặt lại'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[300],
+                                  foregroundColor: Colors.grey[800],
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_message.isNotEmpty) ...[
+                          SizedBox(height: 16),
+                          Text(
+                            _message,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: _message.contains('⏰')
+                                  ? Colors.red
+                                  : Colors.orange,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Text(
-                _message,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.red,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

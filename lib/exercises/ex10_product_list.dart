@@ -39,7 +39,7 @@ class _ProductPageState extends State<ProductPage> {
       {"id":3,"name":"Tai nghe Bluetooth","price":350000,"image":"https://picsum.photos/seed/p3/500"},
       {"id":4,"name":"Balo du lịch 20L","price":230000,"image":"https://picsum.photos/seed/p4/500"},
       {"id":5,"name":"Đồng hồ thời trang","price":520000,"image":"https://picsum.photos/seed/p5/500"},
-      {"id":6,"name":"Áo khoác nữ mùa đông","price":420000,"image":"https://picsum.photos/seed/p6/500"}
+      {"id":6,"name":"Áo khoác nữ","price":420000,"image":"https://picsum.photos/seed/p6/500"}
     ]
     ''';
 
@@ -56,109 +56,205 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   String formatVND(int v) {
-    return "${v.toString().replaceAllMapped(RegExp(r"(\d)(?=(\d{3})+(?!\d))"), (m) => "${m[1]}.")} ₫";
+    return "${v.toString().replaceAllMapped(RegExp(r"(\d)(?=(\d{3})+(?!\d))"), (m) => "${m[1]}.")}₫";
   }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    int columnCount = width < 360 ? 1 : 2;
-
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF2F53D8),
-        title: const Text(
-          "Danh sách sản phẩm",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: GridView.builder(
-          itemCount: products.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columnCount,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.65,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFf093fb).withOpacity(0.1), Colors.white],
           ),
-          itemBuilder: (context, index) {
-            final p = products[index];
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 120,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  'Shop Online',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.all(16),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.7,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final p = products[index];
+                    return _ProductCard(
+                      product: p,
+                      formatVND: formatVND,
+                    );
+                  },
+                  childCount: products.length,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-            return Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+class _ProductCard extends StatefulWidget {
+  final Product product;
+  final String Function(int) formatVND;
+
+  const _ProductCard({
+    required this.product,
+    required this.formatVND,
+  });
+
+  @override
+  State<_ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<_ProductCard> {
+  bool _isFavorite = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.network(
+                    widget.product.image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () => setState(() => _isFavorite = !_isFavorite),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      _isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: _isFavorite ? Colors.red : Colors.grey,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(12),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.network(
-                        p.image,
-                        fit: BoxFit.cover,
+                  Text(
+                    widget.product.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    widget.formatVND(widget.product.price),
+                    style: TextStyle(
+                      color: Color(0xFFf5576c),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Đã thêm vào giỏ hàng 🛒"),
+                            backgroundColor: Colors.green,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFf5576c),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart, size: 16),
+                          SizedBox(width: 4),
+                          Text("Mua", style: TextStyle(fontSize: 13)),
+                        ],
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          p.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          formatVND(p.price),
-                          style: const TextStyle(
-                            color: Color(0xFF2F53D8),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2F53D8),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            icon: const Icon(Icons.shopping_cart,
-                                color: Colors.white),
-                            label: const Text("Mua ngay",
-                                style: TextStyle(color: Colors.white)),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        "Đã thêm '${p.name}' vào giỏ hàng")),
-                              );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  )
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -11,124 +11,227 @@ class _FeedbackFormState extends State<FeedbackForm> {
   final TextEditingController _nameCtrl = TextEditingController();
   final TextEditingController _contentCtrl = TextEditingController();
 
-  int _rating = 4;
-
-  final Color mainColor = const Color(0xFFFF5722);
+  int _rating = 5;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      body: Center(
-        child: Container(
-          width: 380,
-          padding: const EdgeInsets.all(20),
-          color: Colors.grey.shade100,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(15),
-                color: mainColor,
-                child: const Center(
-                  child: Text(
-                    "Gửi phản hồi",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _nameCtrl,
-                decoration: InputDecoration(
-                  labelText: "Họ tên",
-                  prefixIcon: const Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Đánh giá (1 - 5 sao)",
-                  style: TextStyle(fontSize: 13),
-                ),
-              ),
-              const SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFfa709a), Color(0xFFfee140)],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(24),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 450),
+                padding: EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 30,
+                      offset: Offset(0, 15),
+                    ),
+                  ],
                 ),
-                child: DropdownButton<int>(
-                  value: _rating,
-                  isExpanded: true,
-                  underline: const SizedBox(),
-                  icon: const Icon(Icons.arrow_drop_down),
-                  items: List.generate(5, (index) {
-                    final star = index + 1;
-                    return DropdownMenuItem(
-                      value: star,
-                      child: Row(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.feedback_outlined,
+                      size: 64,
+                      color: Color(0xFFfa709a),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Gửi phản hồi',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    Text(
+                      'Chúng tôi luôn lắng nghe bạn',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                    _buildTextField(
+                      controller: _nameCtrl,
+                      label: "Họ tên",
+                      icon: Icons.person_outline,
+                      hint: "Nhập họ tên của bạn",
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.star, color: Colors.amber),
-                          const SizedBox(width: 5),
-                          Text("$star sao"),
+                          Text(
+                            "Đánh giá của bạn",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(5, (index) {
+                              return GestureDetector(
+                                onTap: () =>
+                                    setState(() => _rating = index + 1),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 4),
+                                  child: Icon(
+                                    index < _rating
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Color(0xFFfee140),
+                                    size: 40,
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                          SizedBox(height: 8),
+                          Center(
+                            child: Text(
+                              "$_rating sao",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFfa709a),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    );
-                  }),
-                  onChanged: (val) {
-                    setState(() => _rating = val!);
-                  },
-                ),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: _contentCtrl,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: "Nội dung góp ý",
-                  alignLabelWithHint: true,
-                  prefixIcon: const Icon(Icons.feedback),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
                     ),
-                  ),
-                  icon: const Icon(Icons.send, color: Colors.white),
-                  label: const Text(
-                    "Gửi phản hồi",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Đã gửi phản hồi!")),
-                    );
-                  },
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _contentCtrl,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        labelText: "Nội dung góp ý",
+                        hintText: "Chia sẻ suy nghĩ của bạn...",
+                        alignLabelWithHint: true,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(bottom: 60),
+                          child: Icon(Icons.message_outlined,
+                              color: Color(0xFFfa709a)),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide:
+                              BorderSide(color: Colors.grey[200]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide:
+                              BorderSide(color: Color(0xFFfa709a), width: 2),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFfa709a), Color(0xFFfee140)],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFFfa709a).withOpacity(0.4),
+                            blurRadius: 15,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Cảm ơn bạn đã góp ý! 💝"),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.send),
+                        label: Text("Gửi phản hồi"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String hint,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Color(0xFFfa709a)),
+        filled: true,
+        fillColor: Colors.grey[50],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Color(0xFFfa709a), width: 2),
         ),
       ),
     );

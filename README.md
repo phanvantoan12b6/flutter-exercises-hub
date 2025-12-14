@@ -20,7 +20,7 @@ Tổng hợp 11 bài tập Flutter với giao diện đẹp, hiện đại.
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/flutter-exercises-hub.git
+git clone https://github.com/phanvantoan12b6/flutter-exercises-hub.git
 
 # Di chuyển vào thư mục
 cd flutter_exercises_hub
@@ -53,7 +53,7 @@ flutter run
 
 ## 👨‍💻 Tác giả
 
-[Tên của bạn]
+Phan Văn Toản
 
 ## 📄 License
 
