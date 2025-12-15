@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Google Classroom UI',
       description: 'Giao diện lớp học với gradient và custom art',
       icon: Icons.school,
-      difficulty: 'Trung bình',
+      difficulty: 'Dễ',
       color: Colors.deepPurple,
     ),
     Exercise(
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Counter App',
       description: 'Ứng dụng đếm số với màu động',
       icon: Icons.add_circle_outline,
-      difficulty: 'Dễ',
+      difficulty: 'Trung bình',
       color: Colors.green,
     ),
     Exercise(
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Change Color',
       description: 'Đổi màu nền ngẫu nhiên',
       icon: Icons.color_lens,
-      difficulty: 'Dễ',
+      difficulty: 'Trung bình',
       color: Colors.purple,
     ),
     Exercise(
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Login Form',
       description: 'Form đăng nhập đơn giản',
       icon: Icons.login,
-      difficulty: 'Dễ',
+      difficulty: 'Trung bình',
       color: Colors.cyan,
     ),
     Exercise(
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
       title: 'BMI Calculator',
       description: 'Tính chỉ số cân nặng BMI',
       icon: Icons.calculate,
-      difficulty: 'Dễ',
+      difficulty: 'Trung bình',
       color: Colors.teal,
     ),
     Exercise(
