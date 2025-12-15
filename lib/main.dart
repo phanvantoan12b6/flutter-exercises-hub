@@ -588,7 +588,7 @@ class _HomePageState extends State<HomePage> {
       case 1:
         return ClassroomListScreen();
       case 2:
-        return TravelHomeScreen();
+        return HomeScreen();
       case 3:
         return CountdownTimerPage();
       case 4:
