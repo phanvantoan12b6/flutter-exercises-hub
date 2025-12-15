@@ -14,6 +14,7 @@ import 'exercises/ex08_bmi_calculator.dart';
 import 'exercises/ex09_feedback_form.dart';
 import 'exercises/ex10_product_list.dart';
 import 'exercises/ex11_ecommerce/screens/product_list_screen.dart';
+import 'exercises/ex12_login_profile.dart';
 
 void main() {
   runApp(const FlutterExercisesHub());
@@ -146,6 +147,14 @@ class _HomePageState extends State<HomePage> {
       icon: Icons.store,
       difficulty: 'Khó',
       color: Colors.red,
+    ),
+    Exercise(
+      id: 12,
+      title: 'Login + Profile',
+      description: 'Đăng nhập và trang cá nhân với animation',
+      icon: Icons.account_circle,
+      difficulty: 'Khó',
+      color: Colors.deepPurple,
     ),
   ];
 
@@ -417,7 +426,7 @@ class _HomePageState extends State<HomePage> {
                 _buildStatCard(
                     'Tổng bài tập', '${exercises.length}', Icons.assignment),
                 const SizedBox(width: 24),
-                _buildStatCard('Đã hoàn thành', '11/${exercises.length}',
+                _buildStatCard('Đã hoàn thành', '12/${exercises.length}',
                     Icons.check_circle_outline),
                 const SizedBox(width: 24),
                 _buildStatCard('Độ khó', 'Đa dạng', Icons.trending_up),
@@ -598,6 +607,8 @@ class _HomePageState extends State<HomePage> {
         return ProductPage();
       case 11:
         return ProductListScreen();
+      case 12:
+        return LoginProfileApp();
       default:
         return Center(child: Text('Bài tập không tồn tại'));
     }
